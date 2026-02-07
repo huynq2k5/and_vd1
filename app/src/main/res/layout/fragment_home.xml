@@ -34,7 +34,8 @@
                         android:id="@+id/imgAvatar"
                         android:layout_width="45dp"
                         android:layout_height="45dp"
-                        android:src="@drawable/h1"
+                        android:src="@drawable/h2"
+                        android:scaleType="centerCrop"
                         app:shapeAppearanceOverlay="@style/CircleImage"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -136,7 +137,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Tiến độ hôm nay"
-                            android:textColor="#1A1A1A"
+                            android:textColor="?attr/colorOnSurface"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 

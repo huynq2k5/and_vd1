@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/h2"
+        android:src="@drawable/h3"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -16,7 +16,8 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="?attr/colorSurface"
+        app:cnb_unselectedColor="?attr/colorOnSurfaceVariant"
         android:padding="8dp"
         app:cnb_menuResource="@menu/bottom_nav_menu"
         app:cnb_radius="16dp"
