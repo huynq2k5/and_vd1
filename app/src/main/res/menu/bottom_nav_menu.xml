@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Công việc"
+        app:cnb_unselectedColor="#757575"
+        app:cnb_iconColor="#8B0000" />
+    <item
+        android:id="@+id/navigation_add"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="Thêm"
+        app:cnb_unselectedColor="#757575"
+        app:cnb_iconColor="#8B0000" />
+</menu>
