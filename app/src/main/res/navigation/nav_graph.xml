@@ -16,5 +16,10 @@
         android:name="com.example.vd1.ui.add.AddFragment"
         android:label="Thêm công việc mới"
         tools:layout="@layout/fragment_add" />
+    <fragment
+        android:id="@+id/navigation_library"
+        android:name="com.example.vd1.ui.library.LibraryFragment"
+        android:label="Thư viện"
+        tools:layout="@layout/fragment_library" />
 
 </navigation>

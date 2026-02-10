@@ -13,4 +13,10 @@
         android:title="Thêm"
         app:cnb_unselectedColor="#757575"
         app:cnb_iconColor="#8B0000" />
+    <item
+        android:id="@+id/navigation_library"
+        android:icon="@android:drawable/ic_media_play"
+        android:title="Thư viện"
+        app:cnb_unselectedColor="#757575"
+        app:cnb_iconColor="#8B0000"/>
 </menu>
