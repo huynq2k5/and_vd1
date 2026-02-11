@@ -1,47 +1,58 @@
 package com.example.vd1.data.repository;
 
+import android.app.Application;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import com.example.vd1.data.local.AppDatabase;
+import com.example.vd1.data.local.dao.TaskDao;
 import com.example.vd1.data.model.Task;
 import com.example.vd1.data.remote.ApiService;
+import com.example.vd1.data.remote.RetrofitClient; // Nhớ import file mới này
 
-import java.util.ArrayList;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TaskRepository {
+    private TaskDao taskDao;
     private ApiService apiService;
+    private LiveData<List<Task>> allTasks;
 
-    public TaskRepository() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://itchy-leola-huycompany-8ab116e9.koyeb.app/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        apiService = retrofit.create(ApiService.class);
+    public TaskRepository(Application application) {
+        // 1. Khởi tạo DB Local
+        AppDatabase db = AppDatabase.getDatabase(application);
+        taskDao = db.taskDao();
+        allTasks = taskDao.getAllTasks();
+
+        // 2. Khởi tạo API Service (GỌN HƠN RẤT NHIỀU)
+        // Thay vì viết cả cụm Builder, giờ chỉ cần gọi:
+        apiService = RetrofitClient.getClient().create(ApiService.class);
     }
 
-    public LiveData<List<Task>> getTasksFromApi() {
-        MutableLiveData<List<Task>> data = new MutableLiveData<>();
+    public LiveData<List<Task>> getTasks() {
+        refreshTasksFromApi();
+        return allTasks;
+    }
 
+    public void refreshTasksFromApi() {
         apiService.getTasks().enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    data.setValue(response.body());
-                } else {
-                    data.setValue(new ArrayList<>());
+                    AppDatabase.databaseWriteExecutor.execute(() -> {
+                        // SỬA ĐOẠN NÀY:
+                        // Thay vì chỉ insertAll, ta gọi hàm syncData vừa viết
+                        taskDao.syncData(response.body());
+                    });
+                    Log.d("TaskRepository", "Đã đồng bộ lại toàn bộ DB theo Server");
                 }
             }
 
             @Override
             public void onFailure(Call<List<Task>> call, Throwable t) {
-                data.setValue(null);
+                Log.e("TaskRepository", "Lỗi mạng: " + t.getMessage());
             }
         });
-        return data;
     }
 }

@@ -1,19 +1,23 @@
 package com.example.vd1.ui.home;
 
+import android.app.Application;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
 import com.example.vd1.data.model.Task;
 import com.example.vd1.data.repository.TaskRepository;
 import java.util.List;
 
-public class HomeViewModel extends ViewModel {
+// Đổi thành AndroidViewModel
+public class HomeViewModel extends AndroidViewModel {
     private TaskRepository repository;
-    private LiveData<List<Task>> allTasks;
+    private final LiveData<List<Task>> allTasks;
 
-    public HomeViewModel() {
-        repository = new TaskRepository();
-        allTasks = repository.getTasksFromApi();
+    public HomeViewModel(@NonNull Application application) {
+        super(application);
+        repository = new TaskRepository(application); // Truyền application vào
+        allTasks = repository.getTasks(); // Lấy LiveData từ DB
     }
 
     public LiveData<List<Task>> getTasks() {
