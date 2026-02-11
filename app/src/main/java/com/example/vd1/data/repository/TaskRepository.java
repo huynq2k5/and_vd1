@@ -31,27 +31,32 @@ public class TaskRepository {
     }
 
     public LiveData<List<Task>> getTasks() {
-        refreshTasksFromApi();
+        refreshTasksFromApi(null);
         return allTasks;
     }
 
-    public void refreshTasksFromApi() {
+    public void refreshTasksFromApi(DataCallback callback) {
         apiService.getTasks().enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     AppDatabase.databaseWriteExecutor.execute(() -> {
-                        // SỬA ĐOẠN NÀY:
-                        // Thay vì chỉ insertAll, ta gọi hàm syncData vừa viết
+                        // Gọi hàm syncData (Xóa cũ nạp mới)
                         taskDao.syncData(response.body());
+
+                        // Báo về UI là đã xong (để tắt vòng xoay)
+                        if (callback != null) {
+                            callback.onDataLoaded();
+                        }
                     });
-                    Log.d("TaskRepository", "Đã đồng bộ lại toàn bộ DB theo Server");
+                } else {
+                    if (callback != null) callback.onError("Lỗi server: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Task>> call, Throwable t) {
-                Log.e("TaskRepository", "Lỗi mạng: " + t.getMessage());
+                if (callback != null) callback.onError("Lỗi mạng: " + t.getMessage());
             }
         });
     }

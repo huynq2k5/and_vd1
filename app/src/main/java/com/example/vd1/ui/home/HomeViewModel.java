@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import com.example.vd1.data.model.Task;
+import com.example.vd1.data.repository.DataCallback;
 import com.example.vd1.data.repository.TaskRepository;
 import java.util.List;
 
@@ -44,5 +45,9 @@ public class HomeViewModel extends AndroidViewModel {
             }
             return count;
         });
+    }
+    public void refreshData(DataCallback callback) {
+        // ViewModel chuyển lời gọi từ Fragment sang Repository
+        repository.refreshTasksFromApi(callback);
     }
 }

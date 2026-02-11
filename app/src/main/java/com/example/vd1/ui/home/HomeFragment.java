@@ -2,6 +2,7 @@ package com.example.vd1.ui.home;
 
 import android.os.Bundle;
 
+import com.example.vd1.data.repository.DataCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,7 +39,6 @@ public class HomeFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private HomeViewModel viewModel;
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -80,6 +81,16 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // 1. Ánh xạ SwipeRefreshLayout
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+
+        // Cấu hình màu sắc
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light);
+
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         TextView tvInProgress = view.findViewById(R.id.tvDangLam);
@@ -102,6 +113,30 @@ public class HomeFragment extends Fragment {
             if (tasks != null) {
                 adapter.setTaskList(tasks);
             }
+        });
+
+        // 2. Xử lý sự kiện Kéo xuống (Refresh)
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Gọi hàm refreshData trong ViewModel (Bạn cần thêm hàm này vào ViewModel như bài trước)
+            viewModel.refreshData(new DataCallback() {
+                @Override
+                public void onDataLoaded() {
+                    // Tắt vòng xoay trên luồng UI
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> swipeRefreshLayout.setRefreshing(false));
+                    }
+                }
+
+                @Override
+                public void onError(String message) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            swipeRefreshLayout.setRefreshing(false);
+                            Toast.makeText(getContext(), "Lỗi: " + message, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }
+            });
         });
     }
 }
